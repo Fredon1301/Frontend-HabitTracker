@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrackerHabit - Gamificação de Hábitos</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Status da API -->
+    <div id="apiStatus" class="api-status offline">
+        <i class="fas fa-circle"></i> API On-line
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-trophy"></i> TrackerHabit
+            </div>
+            <div id="userSection">
+                <div class="form-group">
+                    <input type="text" id="usernameInput" placeholder="Digite seu nome de usuário" style="display: inline-block; width: 200px; margin-right: 10px;">
+                    <input type="password" id="passwordInput" placeholder="Digite sua senha" style="display: inline-block; width: 200px; margin-right: 10px;">
+                    <button class="btn" onclick="loginUser()">Entrar</button>
+                    <button class="btn" onclick="registerUser()" style="background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);">Registrar</button>
+                </div>
+                <div id="userSectionMessage" style="margin-top: 10px;"></div>
+            </div>
+            <div id="userInfo" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h2 id="welcomeUser"></h2>
+                    <button class="btn btn-small btn-danger" onclick="logout()" style="margin-left: 15px;">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
+                </div>
+                <div class="user-info">
+                    <div class="stat-card">
+                        <div class="stat-number" id="userXP">0</div>
+                        <div class="stat-label">XP Total</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <span class="streak-flame"><i class="fas fa-fire"></i></span>
+                            <span id="userStreak">0</span>
+                        </div>
+                        <div class="stat-label">Dias de Ofensiva</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalHabits">0</div>
+                        <div class="stat-label">Hábitos Ativos</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="mainContent" style="display: none;">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="openTab('habits')">
+                    <i class="fas fa-tasks"></i> Meus Hábitos
+                </button>
+                <button class="tab-btn" onclick="openTab('rewards')">
+                    <i class="fas fa-gift"></i> Recompensas
+                </button>
+                <button class="tab-btn" onclick="openTab('progress')">
+                    <i class="fas fa-chart-line"></i> Progresso
+                </button>
+            </div>
+
+            <!-- Aba Hábitos -->
+            <div id="habits" class="tab-content active">
+                <div class="grid">
+                    <div class="card">
+                        <h3><i class="fas fa-plus-circle"></i> Criar Novo Hábito</h3>
+                        <div id="habitFormMessage"></div>
+                        <form id="habitForm">
+                            <div class="form-group">
+                                <label for="habitName">Nome do Hábito:</label>
+                                <input type="text" id="habitName" placeholder="Ex: Beber 2L de água" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="habitXP">XP por Conclusão:</label>
+                                <input type="number" id="habitXP" min="1" placeholder="20" required>
+                            </div>
+                            <button type="submit" class="btn">
+                                <i class="fas fa-plus"></i> Criar Hábito
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-list-check"></i> Hábitos de Hoje</h3>
+                        <div id="habitsList">
+                            <div class="loading">
+                                <i class="fas fa-spinner fa-spin"></i> Carregando hábitos...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba Recompensas -->
+            <div id="rewards" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><i class="fas fa-plus-circle"></i> Criar Nova Recompensa</h3>
+                        <div id="rewardFormMessage"></div>
+                        <form id="rewardForm">
+                            <div class="form-group">
+                                <label for="rewardName">Nome da Recompensa:</label>
+                                <input type="text" id="rewardName" placeholder="Ex: Badge Iniciante" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="rewardCost">Custo em XP:</label>
+                                <input type="number" id="rewardCost" min="1" placeholder="50" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="rewardDescription">Descrição:</label>
+                                <textarea id="rewardDescription" rows="3" placeholder="Descrição da recompensa..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn">
+                                <i class="fas fa-plus"></i> Criar Recompensa
+                            </button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-store"></i> Loja de Recompensas</h3>
+                        <div id="rewardsList">
+                            <div class="loading">
+                                <i class="fas fa-spinner fa-spin"></i> Carregando recompensas...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba Progresso -->
+            <div id="progress" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3><i class="fas fa-trophy"></i> Conquistas</h3>
+                        <div id="achievementsList">
+                            <div class="empty-state">
+                                <i class="fas fa-medal"></i>
+                                <p>Suas conquistas aparecerão aqui!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-history"></i> Histórico de Atividades</h3>
+                        <div id="activityLog">
+                            <div class="loading">
+                                <i class="fas fa-spinner fa-spin"></i> Carregando atividades...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3 id="modalTitle">Editar Item</h3>
+            <div id="editFormMessage"></div>
+            <form id="editForm">
+                <div class="form-group">
+                    <label for="editName">Nome:</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editXP">XP:</label>
+                    <input type="number" id="editXP" min="1" required>
+                </div>
+                <div class="form-group" id="editDescGroup" style="display: none;">
+                    <label for="editDescription">Descrição:</label>
+                    <textarea id="editDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 // ===== CONFIGURAÇÃO DA API =====
-const API_BASE_URL = "http://localhost:8080/api"; // AJUSTE ESTA URL CONFORME SEU BACKEND
+const API_BASE_URL = "https://back-habittracker2-production.up.railway.app/api"; // AJUSTE ESTA URL CONFORME SEU BACKEND
 
 // Endpoints da API (ajuste conforme suas rotas)
 const API_ENDPOINTS = {
@@ -599,7 +599,24 @@ async function updateActivityLog() {
             };
         }),
         ...userRewards.map(ur => {
-            const reward = rewards.find(r => r.id === ur.rewardId);
+            // Tenta encontrar a recompensa de várias formas
+            let reward = null;
+            
+            // 1. Tenta pelo rewardId (novo getter)
+            if (ur.rewardId) {
+                reward = rewards.find(r => r.id === ur.rewardId);
+            }
+            
+            // 2. Tenta pelo objeto reward aninhado
+            if (!reward && ur.reward) {
+                reward = ur.reward;
+            }
+            
+            // 3. Fallback: procura por qualquer propriedade que possa ser o ID
+            if (!reward && ur.reward_id) {
+                reward = rewards.find(r => r.id === ur.reward_id);
+            }
+            
             return {
                 date: ur.acquisitionDate,
                 type: 'reward',
@@ -939,58 +956,63 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 // ===== FUNÇÕES DE DISPLAY =====
-function updateHabitsDisplay() {
-    const habitsList = document.getElementById('habitsList');
-    if (!habitsList) return;
+    function updateHabitsDisplay() {
+        const habitsList = document.getElementById('habitsList');
+        if (!habitsList) return;
 
-    if (habits.length === 0) {
-        habitsList.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-sad-tear"></i>
-                <p>Você ainda não tem hábitos. Crie um!</p>
-            </div>
-        `;
-        return;
+        if (habits.length === 0) {
+            habitsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-sad-tear"></i>
+                    <p>Você ainda não tem hábitos. Crie um!</p>
+                </div>
+            `;
+            return;
+        }
+
+        habitsList.innerHTML = habits.map(habit => {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Verifica se foi completado hoje usando múltiplas fontes
+            const completedViaLogs = habitLogs.some(log => {
+                const habitId = log.habit ? log.habit.id : log.habitId;
+                return habitId === habit.id && log.completionDate === today;
+            });
+            const completedViaStatus = habit.completedToday === true;
+            const completedToday = completedViaLogs || completedViaStatus;
+            
+            const ofensiva = habit.ofensiva || 0;
+            
+            return `
+                <div class="habit-item ${completedToday ? 'completed' : ''}" id="habit-${habit.id}">
+                    <div class="habit-header">
+                        <div class="habit-name">
+                            ${completedToday ? '<i class="fas fa-check-circle" style="color: #00b894; margin-right: 8px;"></i>' : ''}
+                            ${habit.name}
+                        </div>
+                        <div class="habit-badges">
+                            <div class="xp-badge ${completedToday ? 'earned' : ''}">
+                                ${completedToday ? '✓ ' : '+'}${habit.xpValue} XP
+                            </div>
+                            ${ofensiva > 0 ? `<div class="streak-badge" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">⚔️ ${ofensiva}</div>` : ''}
+                        </div>
+                    </div>
+                    <div class="habit-actions">
+                        <button class="btn btn-small btn-success" onclick="completeHabit(${habit.id})" ${completedToday ? 'disabled' : ''}>
+                            <i class="fas fa-${completedToday ? 'check' : 'check'}"></i> 
+                            ${completedToday ? 'Concluído Hoje' : 'Completar'}
+                        </button>
+                        <button class="btn btn-small" onclick="editHabit(${habit.id})">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        <button class="btn btn-small btn-danger" onclick="deleteHabit(${habit.id})">
+                            <i class="fas fa-trash"></i> Excluir
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
-
-    habitsList.innerHTML = habits.map(habit => {
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Verifica se foi completado hoje usando múltiplas fontes
-        const completedViaLogs = habitLogs.some(log => {
-            const habitId = log.habit ? log.habit.id : log.habitId;
-            return habitId === habit.id && log.completionDate === today;
-        });
-        const completedViaStatus = habit.completedToday === true;
-        const completedToday = completedViaLogs || completedViaStatus;
-        
-        return `
-            <div class="habit-item ${completedToday ? 'completed' : ''}" id="habit-${habit.id}">
-                <div class="habit-header">
-                    <div class="habit-name">
-                        ${completedToday ? '<i class="fas fa-check-circle" style="color: #00b894; margin-right: 8px;"></i>' : ''}
-                        ${habit.name}
-                    </div>
-                    <div class="xp-badge ${completedToday ? 'earned' : ''}">
-                        ${completedToday ? '✓ ' : '+'}${habit.xpValue} XP
-                    </div>
-                </div>
-                <div class="habit-actions">
-                    <button class="btn btn-small btn-success" onclick="completeHabit(${habit.id})" ${completedToday ? 'disabled' : ''}>
-                        <i class="fas fa-${completedToday ? 'check' : 'check'}"></i> 
-                        ${completedToday ? 'Concluído Hoje' : 'Completar'}
-                    </button>
-                    <button class="btn btn-small" onclick="editHabit(${habit.id})">
-                        <i class="fas fa-edit"></i> Editar
-                    </button>
-                    <button class="btn btn-small btn-danger" onclick="deleteHabit(${habit.id})">
-                        <i class="fas fa-trash"></i> Excluir
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
 
 function updateRewardsDisplay() {
     const rewardsList = document.getElementById('rewardsList');

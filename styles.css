@@ -243,10 +243,33 @@ input:focus, textarea:focus, select:focus {
     animation: earnedPulse 1s ease-in-out;
 }
 
+.streak-badge {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-left: 8px;
+    animation: flamePulse 2s infinite;
+}
+
 @keyframes earnedPulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
+}
+
+@keyframes flamePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.habit-badges {
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .habit-actions {

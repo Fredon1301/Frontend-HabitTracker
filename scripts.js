@@ -1,6 +1,8 @@
 // ===== CONFIGURAÇÃO DA API =====
 const API_BASE_URL = "https://back-habittracker2-production.up.railway.app/api"; // AJUSTE ESTA URL CONFORME SEU BACKEND
 
+//PROD= "https://back-habittracker2-production.up.railway.app/api";
+//DEVELOP= "http://localhost:8080/api";
 // Endpoints da API (ajuste conforme suas rotas)
 const API_ENDPOINTS = {
     // Usuários
@@ -144,6 +146,48 @@ function logout() {
     }
 }
 
+// ===== FUNÇÕES DE TIPO DE USUÁRIO =====
+function isAdmin() {
+    return currentUser && currentUser.userType === 10;
+}
+
+function isNormalUser() {
+    return currentUser && currentUser.userType === 1;
+}
+
+function updateUIBasedOnUserType() {
+    if (!currentUser) return;
+    
+    const registerBtn = document.getElementById('registerBtn');
+    const habitFormSection = document.getElementById('habitFormSection');
+    const rewardFormSection = document.getElementById('rewardFormSection');
+    const editButtons = document.querySelectorAll('.habit-actions .btn:not(.btn-success)');
+    const deleteButtons = document.querySelectorAll('.habit-actions .btn-danger');
+    
+    if (isNormalUser()) {
+        // Esconde botão de registro para usuários normais
+        if (registerBtn) registerBtn.style.display = 'none';
+        
+        // Esconde formulários de criação
+        if (habitFormSection) habitFormSection.style.display = 'none';
+        if (rewardFormSection) rewardFormSection.style.display = 'none';
+        
+        // Esconde botões de editar/excluir
+        editButtons.forEach(btn => btn.style.display = 'none');
+        deleteButtons.forEach(btn => btn.style.display = 'none');
+        
+    } else if (isAdmin()) {
+        // Mostra todos os elementos para administradores
+        if (registerBtn) registerBtn.style.display = 'inline-block';
+        if (habitFormSection) habitFormSection.style.display = 'block';
+        if (rewardFormSection) rewardFormSection.style.display = 'block';
+        
+        // Mostra botões de editar/excluir
+        editButtons.forEach(btn => btn.style.display = 'inline-block');
+        deleteButtons.forEach(btn => btn.style.display = 'inline-block');
+    }
+}
+
 async function loginUser() {
     const username = document.getElementById('usernameInput').value.trim();
     const password = document.getElementById('passwordInput').value.trim();
@@ -187,6 +231,7 @@ async function loginUser() {
         scheduleResetCheck();
         
         updateUserStats();
+        updateUIBasedOnUserType();
         showAchievement('Bem-vindo ao TrackerHabit! 👋');
         
     } catch (error) {
@@ -569,6 +614,10 @@ function deleteHabit(habitId) {
         updateUserStats();
         showAchievement(`Hábito "${habit.name}" excluído! 🗑️`);
     }
+
+                const delHabit = apiRequest(API_ENDPOINTS.habitById(habit.id), {
+                method: 'DELETE'
+                });
 }
 
 function deleteReward(rewardId) {
@@ -964,7 +1013,7 @@ document.addEventListener('DOMContentLoaded', () => {
             habitsList.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-sad-tear"></i>
-                    <p>Você ainda não tem hábitos. Crie um!</p>
+                    <p>Você ainda não tem hábitos. ${isAdmin() ? 'Crie um!' : 'Aguarde que um administrador crie hábitos para você.'}</p>
                 </div>
             `;
             return;
@@ -982,6 +1031,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const completedToday = completedViaLogs || completedViaStatus;
             
             const ofensiva = habit.ofensiva || 0;
+            
+            const isAdminUser = isAdmin();
             
             return `
                 <div class="habit-item ${completedToday ? 'completed' : ''}" id="habit-${habit.id}">
@@ -1002,12 +1053,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             <i class="fas fa-${completedToday ? 'check' : 'check'}"></i> 
                             ${completedToday ? 'Concluído Hoje' : 'Completar'}
                         </button>
+                        ${isAdminUser ? `
                         <button class="btn btn-small" onclick="editHabit(${habit.id})">
                             <i class="fas fa-edit"></i> Editar
                         </button>
                         <button class="btn btn-small btn-danger" onclick="deleteHabit(${habit.id})">
                             <i class="fas fa-trash"></i> Excluir
                         </button>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -1022,12 +1075,14 @@ function updateRewardsDisplay() {
         rewardsList.innerHTML = `
             <div class="empty-state">
                 <i class="fas fa-store-slash"></i>
-                <p>Nenhuma recompensa disponível na loja.</p>
+                <p>Nenhuma recompensa disponível na loja. ${isAdmin() ? 'Crie uma!' : 'Aguarde que um administrador crie recompensas.'}</p>
             </div>
         `;
         return;
     }
 
+    const isAdminUser = isAdmin();
+    
     rewardsList.innerHTML = rewards.map(reward => {
         const owned = userRewards.some(ur => ur.rewardId === reward.id);
         const canAfford = currentUser && currentUser.xpAcumulado >= reward.xpCost;
@@ -1043,6 +1098,14 @@ function updateRewardsDisplay() {
                     <button class="btn btn-small" onclick="buyReward(${reward.id})" ${owned || !canAfford ? 'disabled' : ''}>
                         <i class="fas fa-shopping-cart"></i> ${owned ? 'Adquirido' : 'Comprar'}
                     </button>
+                    ${isAdminUser ? `
+                    <button class="btn btn-small" onclick="editReward(${reward.id})">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="btn btn-small btn-danger" onclick="deleteReward(${reward.id})">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                    ` : ''}
                 </div>
             </div>
         `;

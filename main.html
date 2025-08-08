@@ -23,13 +23,13 @@
                     <input type="text" id="usernameInput" placeholder="Digite seu nome de usuário" style="display: inline-block; width: 200px; margin-right: 10px;">
                     <input type="password" id="passwordInput" placeholder="Digite sua senha" style="display: inline-block; width: 200px; margin-right: 10px;">
                     <button class="btn" onclick="loginUser()">Entrar</button>
-                    <button class="btn" onclick="registerUser()" style="background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);">Registrar</button>
+                    <!--<button class="btn" id="registerBtn" onclick="registerUser()" style="background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);">Registrar</button> -->
                 </div>
                 <div id="userSectionMessage" style="margin-top: 10px;"></div>
             </div>
             <div id="userInfo" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h2 id="welcomeUser"></h2>
+                <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px;">
+                    <h2 id="welcomeUser"> style="color: green;"></h2>
                     <button class="btn btn-small btn-danger" onclick="logout()" style="margin-left: 15px;">
                         <i class="fas fa-sign-out-alt"></i> Sair
                     </button>
@@ -70,7 +70,7 @@
             <!-- Aba Hábitos -->
             <div id="habits" class="tab-content active">
                 <div class="grid">
-                    <div class="card">
+                    <div class="card" id="habitFormSection">
                         <h3><i class="fas fa-plus-circle"></i> Criar Novo Hábito</h3>
                         <div id="habitFormMessage"></div>
                         <form id="habitForm">
@@ -101,7 +101,7 @@
             <!-- Aba Recompensas -->
             <div id="rewards" class="tab-content">
                 <div class="grid">
-                    <div class="card">
+                    <div class="card" id="rewardFormSection">
                         <h3><i class="fas fa-plus-circle"></i> Criar Nova Recompensa</h3>
                         <div id="rewardFormMessage"></div>
                         <form id="rewardForm">

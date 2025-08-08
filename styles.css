@@ -434,4 +434,8 @@ input:focus, textarea:focus, select:focus {
         padding: 10px 15px;
         font-size: 0.9rem;
     }
+
+    #welcomeUser {
+    color: green; /* Ou qualquer outra cor que combine com seu layout */
+    }
 }

@@ -1,5 +1,5 @@
 // ===== CONFIGURAÇÃO DA API =====
-const API_BASE_URL = "http://localhost:8080/api"; // AJUSTE ESTA URL CONFORME SEU BACKEND
+const API_BASE_URL = "https://back-habittracker2-production.up.railway.app/api"; // AJUSTE ESTA URL CONFORME SEU BACKEND
 
 //PROD= "https://back-habittracker2-production.up.railway.app/api";
 //DEVELOP= "http://localhost:8080/api";

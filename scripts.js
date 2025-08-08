@@ -1,5 +1,5 @@
 // ===== CONFIGURAÇÃO DA API =====
-const API_BASE_URL = "https://back-habittracker2-production.up.railway.app/api"; // AJUSTE ESTA URL CONFORME SEU BACKEND
+const API_BASE_URL = "http://localhost:8080/api"; // AJUSTE ESTA URL CONFORME SEU BACKEND
 
 //PROD= "https://back-habittracker2-production.up.railway.app/api";
 //DEVELOP= "http://localhost:8080/api";
@@ -161,8 +161,12 @@ function updateUIBasedOnUserType() {
     const registerBtn = document.getElementById('registerBtn');
     const habitFormSection = document.getElementById('habitFormSection');
     const rewardFormSection = document.getElementById('rewardFormSection');
-    const editButtons = document.querySelectorAll('.habit-actions .btn:not(.btn-success)');
-    const deleteButtons = document.querySelectorAll('.habit-actions .btn-danger');
+    
+    // Seletores específicos para cada seção
+    const habitEditButtons = document.querySelectorAll('#habitsList .habit-actions .btn:not(.btn-success)');
+    const habitDeleteButtons = document.querySelectorAll('#habitsList .habit-actions .btn-danger');
+    const rewardEditButtons = document.querySelectorAll('#rewardsList .habit-actions .btn:not(.btn-small:first-child)');
+    const rewardDeleteButtons = document.querySelectorAll('#rewardsList .habit-actions .btn-danger');
     
     if (isNormalUser()) {
         // Esconde botão de registro para usuários normais
@@ -172,9 +176,13 @@ function updateUIBasedOnUserType() {
         if (habitFormSection) habitFormSection.style.display = 'none';
         if (rewardFormSection) rewardFormSection.style.display = 'none';
         
-        // Esconde botões de editar/excluir
-        editButtons.forEach(btn => btn.style.display = 'none');
-        deleteButtons.forEach(btn => btn.style.display = 'none');
+        // Esconde botões de editar/excluir dos hábitos
+        habitEditButtons.forEach(btn => btn.style.display = 'none');
+        habitDeleteButtons.forEach(btn => btn.style.display = 'none');
+        
+        // Esconde botões de editar/excluir das recompensas
+        rewardEditButtons.forEach(btn => btn.style.display = 'none');
+        rewardDeleteButtons.forEach(btn => btn.style.display = 'none');
         
     } else if (isAdmin()) {
         // Mostra todos os elementos para administradores
@@ -182,9 +190,13 @@ function updateUIBasedOnUserType() {
         if (habitFormSection) habitFormSection.style.display = 'block';
         if (rewardFormSection) rewardFormSection.style.display = 'block';
         
-        // Mostra botões de editar/excluir
-        editButtons.forEach(btn => btn.style.display = 'inline-block');
-        deleteButtons.forEach(btn => btn.style.display = 'inline-block');
+        // Mostra botões de editar/excluir dos hábitos
+        habitEditButtons.forEach(btn => btn.style.display = 'inline-block');
+        habitDeleteButtons.forEach(btn => btn.style.display = 'inline-block');
+        
+        // Mostra botões de editar/excluir das recompensas
+        rewardEditButtons.forEach(btn => btn.style.display = 'inline-block');
+        rewardDeleteButtons.forEach(btn => btn.style.display = 'inline-block');
     }
 }
 

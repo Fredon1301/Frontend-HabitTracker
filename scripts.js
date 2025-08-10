@@ -23,6 +23,7 @@ const API_ENDPOINTS = {
     // Recompensas
     rewards: `${API_BASE_URL}/rewards`,
     rewardById: (id) => `${API_BASE_URL}/rewards/${id}`,
+    rewardByUser: (userId) => `${API_BASE_URL}/users/${userId}/rewards`,
     
     // Recompensas do Usuário
     userRewards: `${API_BASE_URL}/user-rewards`,
@@ -352,7 +353,7 @@ async function loadHabits() {
 
 async function loadRewards() {
     try {
-        rewards = await apiRequest(API_ENDPOINTS.rewardById(currentUser.id));
+        rewards = await apiRequest(API_ENDPOINTS.rewardByUser(currentUser.id));
         updateRewardsDisplay();
     } catch (error) {
         console.error('Erro ao carregar recompensas:', error);

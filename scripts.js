@@ -6,7 +6,6 @@ const API_BASE_URL = "https://back-habittracker2-production.up.railway.app/api";
 // Endpoints da API (ajuste conforme suas rotas)
 const API_ENDPOINTS = {
     // Usuários
-   
     users: `${API_BASE_URL}/users`,
     userById: (id) => `${API_BASE_URL}/users/${id}`,
     
@@ -26,10 +25,13 @@ const API_ENDPOINTS = {
     rewardByUser: (userId) => `${API_BASE_URL}/users/${userId}/rewards`,
     
     // Recompensas do Usuário
-    userRewards: `${API_BASE_URL}/user-rewards`,
-    userRewardsByUser: (userId) => `${API_BASE_URL}/users/${userId}/rewards`,
+    userRewards: `${API_BASE_URL}/users/rewards/`,
+    userRewardsByUser: (userId) => `${API_BASE_URL}/users/${userId}/rewards/owned`,
     purchaseReward: (userId, rewardId) => `${API_BASE_URL}/users/${userId}/rewards/${rewardId}/redeem`,
-
+    
+    // Recompensas disponíveis
+    availableRewards: (userId) => `${API_BASE_URL}/users/${userId}/rewards/available`,
+    
     // Conquistas
     achievementsByUser: (userId) => `${API_BASE_URL}/users/${userId}/achievements`,
     createAchievement: (userId) => `${API_BASE_URL}/users/${userId}/achievements`,
@@ -353,7 +355,7 @@ async function loadHabits() {
 
 async function loadRewards() {
     try {
-        rewards = await apiRequest(API_ENDPOINTS.rewardByUser(currentUser.id));
+        rewards = await apiRequest(API_ENDPOINTS.rewards);
         updateRewardsDisplay();
     } catch (error) {
         console.error('Erro ao carregar recompensas:', error);

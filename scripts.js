@@ -352,7 +352,7 @@ async function loadHabits() {
 
 async function loadRewards() {
     try {
-        rewards = await apiRequest(API_ENDPOINTS.rewardById);
+        rewards = await apiRequest(API_ENDPOINTS.rewardById(currentUser.id));
         updateRewardsDisplay();
     } catch (error) {
         console.error('Erro ao carregar recompensas:', error);

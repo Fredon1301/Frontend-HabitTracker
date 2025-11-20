@@ -436,6 +436,6 @@ input:focus, textarea:focus, select:focus {
     }
 
     #welcomeUser {
-    color: green; /* Ou qualquer outra cor que combine com seu layout */
+    color: green; 
     }
 }

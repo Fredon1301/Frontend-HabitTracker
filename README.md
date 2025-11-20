@@ -15,46 +15,7 @@ O *frontend* é responsável por toda a interação visual do usuário, exibiç�
 
 
 * **Linguagem:** **JavaScript** / **TypeScript**
-* **Framework/Biblioteca:** **React**
 
-## ⚙️ Instalação e Configuração
-
-Siga estes passos para configurar e executar o projeto em sua máquina local.
-
-### Pré-requisitos
-
-Certifique-se de ter o **Node.js** e o **npm** (ou **yarn**) instalados.
-
-### Passos
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone [https://github.com/Fredon1301/Frontend-HabitTracker.git](https://github.com/Fredon1301/Frontend-HabitTracker.git)
-    cd Frontend-HabitTracker
-    ```
-
-2.  **Instale as dependências:**
-    ```bash
-    npm install
-    # ou
-    yarn install
-    ```
-
-3.  **Configuração da API (Backend):**
-    Este *frontend* precisa de uma API de *backend* em execução para funcionar.
-
-    * Crie um arquivo `.env` na raiz do projeto.
-    * Defina a URL da sua API de *backend*. Exemplo:
-        ```env
-        REACT_APP_API_URL=http://localhost:3000/api/
-        ```
-
-4.  **Execute o aplicativo:**
-    ```bash
-    npm start
-    # ou
-    yarn start
-    ```
 
 O aplicativo deve ser aberto automaticamente no seu navegador, geralmente em `http://localhost:3000` (ou outra porta definida).
 
